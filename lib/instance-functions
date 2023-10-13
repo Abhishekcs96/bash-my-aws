@@ -546,15 +546,14 @@ instance-tags() {
   local instance_ids=$(skim-stdin "$@")
   [[ -z $instance_ids ]] && __bma_usage "instance-id [instance-id]" && return 1
 
-  aws ec2 describe-instances                            \
-    --instance-ids $instance_ids                        \
-    --output text                                       \
-    --query "
-      Reservations[].Instances[].[
-        InstanceId,
-        join(' ', [Tags[].[join('=',[Key,Value])][]][])
-      ]"            |
-    columnise
+  aws ec2 describe-instances                \
+      --instance-id $instance_ids           \
+      --output text                         \
+      --query 'Reservations[].Instances[].[
+        InstanceId, 
+        [Tags[].[Key, Value]]
+        ]'          |                       \
+      column --table --separator $'\t'
 }
 
 instance-tag() {
