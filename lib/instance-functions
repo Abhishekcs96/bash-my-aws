@@ -553,8 +553,8 @@ instance-tags() {
         InstanceId, 
         [Tags[].[Key, Value]]
         ]'          |                       \
-      column --table --separator $'\t' |    \
-      sed 's/^i-.*$/\n&/'
+      awk '/^i-0.*$/ {instance=$0; next} {print instance, $0}' | \
+      columnise
 }
 
 instance-tag() {
